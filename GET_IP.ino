@@ -1,3 +1,5 @@
+#include <ArduinoJson.h>
+
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
 
@@ -43,6 +45,8 @@ void loop() {
     Serial.println("Connection failed");
   }
   GetRequest("http://192.168.43.239:3000/GetDataFromServer?channel=temp");
+  String req = "1.5";
+  PostRequest("http://192.168.43.239:3000/postDataToServer", req);
   //  GetRequest("http://" + host + ":" + port + uri + ");
   //Send Request for Client
   //  Serial.println("GET" + uri + " HTTP / 1.1\r\n" +
@@ -75,20 +79,27 @@ void GetRequest(String url) {
   }
 }
 
+
 void PostRequest(String url, String payload) {
   if (WiFi.status() == WL_CONNECTED) { //Check WiFi connection status
-
+    DynamicJsonDocument doc(1024);
+    doc["channel"] = "temp";
+    JsonObject data = doc.createNestedObject("data");
+    data["name"] = "temp";
+    data["value"] = payload;
+    
+    char output[1024];
+    serializeJson(doc, output, sizeof(output));
+    
     HTTPClient http;  //Declare an object of class HTTPClient
     http.addHeader("Content-Type", "application/json");
     http.begin(url);  //Specify request destination
-    String req = "{\"channel\":\"temp\",\"data\":{\"name\":\"temp\",\"value\":2}}";
-    int httpCode = http.POST(req);                                                                  //Send the request
+//    Serial.println(output);
+    int httpCode = http.POST(output);                                                                  //Send the request
 
-    if (httpCode > 0) { //Check the returning code
-
-      String response = http.getString();   //Get the request response payload
-      Serial.println(response);                     //Print the response payload
-    }
+    String response = http.getString();   //Get the request response payload
+    Serial.print(httpCode);
+    Serial.println(response);
 
     http.end();   //Close connection
   } else {
