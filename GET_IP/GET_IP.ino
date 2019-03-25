@@ -4,8 +4,8 @@
 
 // WiFi config
 const char ssid[] = "Firefight";
-const char password[] = "";
-const char host[] = "192.168.43.239";
+const char password[] = "Uzumaki123";
+const char host[] = "192.168.43.247";
 const String uri = "/GetDataFromServer?channel=temp";
 const int port = 3000;
 
@@ -18,9 +18,9 @@ void setup() {
 }
 
 void loop() {
-  GetRequest("http://192.168.43.239:3000/GetDataFromServer?type=temp");
+  GetRequest("http://192.168.43.47:3000/GetDataFromServer?type=temp");
   String req = "type=temp&value=1.5";
-  PostRequest("http://192.168.43.239:3000/postFormData", req);
+  PostRequest("http://192.168.43.247:3000/postFormData", req);
   delay(15000);
 }
 
